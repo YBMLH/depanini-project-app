@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Depanini – App Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --purple: #5B2D8E; --purple-dark: #3D1A6E; --purple-mid: #7040B8;
+  --purple-light: #EEE6F8; --purple-soft: #F5F0FC;
+  --orange: #F05A28; --orange-light: #FF7043; --orange-soft: #FFF0EB;
+  --white: #fff; --bg: #F8F7FC; --text: #1A0A2E; --muted: #7B7B9D;
+  --border: #EAE4F4; --green: #22C55E; --red: #EF4444;
+}
+html, body { height: 100%; font-family: 'Nunito', sans-serif; background: #1a0a2e; overflow: hidden; }
+
+/* ── OUTER SHELL ── */
+.shell {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 20px;
+}
+.phone-frame {
+  width: 390px; height: 844px;
+  background: var(--bg); border-radius: 52px;
+  overflow: hidden; position: relative;
+  box-shadow: 0 0 0 8px #111, 0 0 0 10px #333, 0 40px 100px rgba(0,0,0,0.7);
+}
+.phone-notch {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 34px; background: #0a0a0a; border-radius: 20px; z-index: 999;
+}
+.status-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 52px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 28px 8px; z-index: 998; pointer-events: none;
+}
+.status-time { font-weight: 800; font-size: 15px; }
+.status-icons { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+
+/* ── SCREENS ── */
+.screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  opacity: 0; transform: translateX(40px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
+}
+.screen.active {
+  display: flex; opacity: 1; transform: translateX(0);
+}
+.screen.slide-out {
+  opacity: 0; transform: translateX(-40px);
+}
+.screen-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; }
+.screen-scroll::-webkit-scrollbar { display: none; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  display: flex; background: var(--white);
+  border-top: 1px solid var(--border);
+  padding: 8px 0 20px; flex-shrink: 0;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 4px; cursor: pointer; transition: all 0.2s;
+}
+.nav-icon { font-size: 20px; position: relative; }
+.nav-label { font-size: 10px; font-weight: 700; color: var(--muted); }
+.nav-item.active .nav-label { color: var(--purple); }
+.nav-center-btn {
+  width: 56px; height: 56px; margin-top: -28px;
+  background: var(--orange); border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; cursor: pointer;
+  box-shadow: 0 8px 24px rgba(240,90,40,0.4);
+  transition: all 0.2s;
+}
+.nav-center-btn:hover { transform: scale(1.05); }
+
+/* ── SCREEN: SPLASH ── */
+#screen-splash { background: linear-gradient(160deg, var(--purple-dark) 0%, var(--purple) 60%, var(--purple-mid) 100%); }
+.splash-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+.splash-logo { font-family: 'Poppins', sans-serif; font-size: 48px; font-weight: 800; color: var(--white); margin-bottom: 12px; }
+.splash-logo span { color: var(--orange); }
+.splash-tagline { color: rgba(255,255,255,0.7); font-size: 16px; text-align: center; }
+.splash-truck { font-size: 80px; margin: 32px 0; animation: truckFloat 3s ease infinite; }
+@keyframes truckFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+.splash-btn {
+  width: 100%; background: var(--orange); color: var(--white);
+  border: none; border-radius: 16px; padding: 18px;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer; box-shadow: 0 8px 24px rgba(240,90,40,0.4);
+  transition: all 0.2s; margin-top: 20px;
+}
+.splash-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(240,90,40,0.5); }
+.splash-secure { color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 20px; display: flex; align-items: center; gap: 6px; }
+
+/* ── SCREEN: LOGIN ── */
+#screen-login { }
+.login-hero {
+  height: 200px; background: linear-gradient(160deg, var(--purple-dark), var(--purple));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding-top: 52px; position: relative; overflow: hidden;
+}
+.login-hero::after {
+  content: '🚛'; font-size: 60px; position: absolute; bottom: -10px; right: 20px; opacity: 0.3;
+}
+.login-logo { font-family: 'Poppins', sans-serif; font-size: 30px; font-weight: 800; color: var(--white); }
+.login-logo span { color: var(--orange); }
+.login-sub { color: rgba(255,255,255,0.65); font-size: 13px; }
+.login-sheet {
+  background: var(--white); border-radius: 28px 28px 0 0;
+  margin-top: -20px; flex: 1; padding: 28px 24px;
+}
+.login-title { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); }
+.login-sub2 { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.tabs { display: flex; gap: 0; margin-top: 20px; border-bottom: 2px solid var(--border); }
+.tab {
+  flex: 1; text-align: center; padding: 12px; font-size: 15px; font-weight: 700;
+  color: var(--muted); cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -2px;
+  transition: all 0.2s;
+}
+.tab.active { color: var(--purple); border-bottom-color: var(--purple); }
+.input-field {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 14px 16px; margin-top: 16px; display: flex; align-items: center; gap: 10px;
+  transition: border-color 0.2s;
+}
+.input-field:focus-within { border-color: var(--purple); }
+.input-icon { font-size: 18px; flex-shrink: 0; }
+.input-field input {
+  flex: 1; border: none; background: transparent; font-family: 'Nunito', sans-serif;
+  font-size: 15px; font-weight: 600; color: var(--text); outline: none;
+}
+.input-field input::placeholder { color: #bbb; font-weight: 500; }
+.remember-row { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
+.remember { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.check-box { width: 20px; height: 20px; background: var(--purple); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
+.forgot { color: var(--purple); font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-purple {
+  width: 100%; background: var(--purple); color: var(--white); border: none;
+  border-radius: 16px; padding: 16px; font-family: 'Nunito', sans-serif;
+  font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 20px;
+  box-shadow: 0 6px 20px rgba(91,45,142,0.3); transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-purple:hover { transform: translateY(-2px); }
+.divider-text { text-align: center; color: var(--muted); font-size: 13px; margin: 16px 0; position: relative; }
+.divider-text::before, .divider-text::after { content: ''; position: absolute; top: 50%; width: 35%; height: 1px; background: var(--border); }
+.divider-text::before { left: 0; } .divider-text::after { right: 0; }
+.social-btns { display: flex; gap: 12px; }
+.social-btn {
+  flex: 1; background: var(--bg); border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.social-btn:hover { border-color: var(--purple); }
+.role-section { margin-top: 20px; background: var(--bg); border-radius: 16px; padding: 16px; }
+.role-title { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.role-sub { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.role-btns { display: flex; gap: 10px; }
+.role-btn {
+  flex: 1; border-radius: 14px; padding: 14px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; border: 1.5px solid; transition: all 0.2s;
+}
+.role-btn:hover { transform: translateY(-2px); }
+.role-btn.client { background: var(--purple-soft); border-color: var(--purple); }
+.role-btn.driver { background: var(--orange-soft); border-color: var(--orange); }
+.role-icon { font-size: 24px; }
+.role-name { font-size: 14px; font-weight: 800; }
+.role-btn.client .role-name { color: var(--purple); }
+.role-btn.driver .role-name { color: var(--orange); }
+.role-desc { font-size: 10px; color: var(--muted); text-align: center; }
+
+/* ── SCREEN: HOME ── */
+#screen-home { }
+.home-header {
+  background: var(--white); padding: 52px 20px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.header-menu { width: 40px; height: 40px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+.header-logo { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: var(--purple); }
+.header-logo span { color: var(--orange); }
+.header-bell {
+  width: 40px; height: 40px; background: var(--bg); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; position: relative;
+}
+.bell-badge { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: var(--orange); border-radius: 50%; border: 2px solid white; font-size: 9px; color: white; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.loc-bar { background: var(--white); margin: 0 16px 0; border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.loc-icon { color: var(--purple); font-size: 18px; }
+.loc-text { flex: 1; }
+.loc-label { font-size: 12px; font-weight: 800; color: var(--purple); }
+.loc-addr { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.loc-target { font-size: 18px; color: var(--muted); cursor: pointer; }
+/* fake map */
+.home-map {
+  height: 200px; background: #e8eaf6; position: relative; overflow: hidden; margin: 12px 16px; border-radius: 16px;
+}
+.map-grid-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(91,45,142,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(91,45,142,0.07) 1px, transparent 1px); background-size: 22px 22px; }
+.map-road { position: absolute; background: rgba(255,255,255,0.85); }
+.map-road.h { height: 9px; left: 0; right: 0; }
+.map-road.v { width: 9px; top: 0; bottom: 0; }
+.map-user-dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 18px; height: 18px; background: var(--purple); border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 10px rgba(91,45,142,0.15), 0 4px 12px rgba(91,45,142,0.3); }
+.map-truck-anim { position: absolute; font-size: 22px; animation: mapTruck 7s linear infinite; }
+@keyframes mapTruck { 0%{top:15%;left:5%} 35%{top:28%;left:32%} 60%{top:42%;left:52%} 80%{top:35%;left:65%} 100%{top:15%;left:5%} }
+.map-truck-anim2 { position: absolute; font-size:18px; animation:mapTruck2 9s linear infinite; }
+@keyframes mapTruck2 { 0%{top:68%;left:72%} 40%{top:52%;left:48%} 70%{top:62%;left:18%} 100%{top:68%;left:72%} }
+.map-recenter { position: absolute; right: 10px; bottom: 10px; width: 36px; height: 36px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
+/* big orange button */
+.request-btn {
+  background: var(--orange); border-radius: 18px; padding: 16px 18px;
+  margin: 0 16px; display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 24px rgba(240,90,40,0.3); cursor: pointer; transition: all 0.2s;
+}
+.request-btn:hover { transform: scale(1.02); }
+.request-btn-icon { font-size: 28px; }
+.request-btn-text { flex: 1; }
+.request-btn-title { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--white); }
+.request-btn-sub { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px; }
+.request-btn-arrow { font-size: 20px; color: var(--white); }
+/* problem types */
+.prob-section { padding: 16px; }
+.prob-title { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.prob-grid { display: flex; gap: 10px; }
+.prob-card {
+  flex: 1; background: var(--orange-soft); border-radius: 14px; padding: 14px 12px;
+  display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1.5px solid #FFDDD0;
+  transition: all 0.2s;
+}
+.prob-card:hover { transform: translateY(-2px); border-color: var(--orange); }
+.prob-card-icon { font-size: 22px; }
+.prob-card-text { }
+.prob-card-name { font-size: 14px; font-weight: 800; color: var(--orange); }
+.prob-card-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+/* recent */
+.recent-section { padding: 0 16px 16px; }
+.recent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.recent-title { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
+.see-all { color: var(--purple); font-size: 13px; font-weight: 700; cursor: pointer; }
+.recent-item {
+  background: var(--white); border-radius: 14px; padding: 14px;
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+}
+.recent-item:hover { border-color: var(--purple); }
+.recent-item-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--orange-soft); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.recent-item-text { flex: 1; }
+.recent-item-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.recent-item-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.badge-done { background: #DCFCE7; color: #16A34A; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 20px; }
+/* support card */
+.support-card { background: var(--purple-soft); border-radius: 16px; padding: 14px; margin: 0 16px 16px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); }
+.support-icon { font-size: 28px; }
+.support-text { flex: 1; }
+.support-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.support-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.support-btn { width: 40px; height: 40px; background: var(--purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+
+/* ── SCREEN: TRACKING ── */
+#screen-tracking { }
+.tracking-header {
+  background: var(--white); padding: 52px 20px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.back-btn { width: 40px; height: 40px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+.tracking-title { text-align: center; }
+.tracking-title-main { font-family: 'Poppins', sans-serif; font-size: 17px; font-weight: 700; color: var(--text); }
+.tracking-title-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.help-btn { display: flex; align-items: center; gap: 6px; background: var(--bg); border-radius: 12px; padding: 8px 14px; cursor: pointer; }
+.help-btn span { font-size: 13px; font-weight: 700; color: var(--text); }
+/* status bar */
+.status-card {
+  background: var(--white); margin: 12px 16px; border-radius: 16px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px; border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(91,45,142,0.07);
+}
+.status-truck-icon { font-size: 32px; }
+.status-text { flex: 1; }
+.status-main { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+.status-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.eta-badge { background: var(--orange-soft); border-radius: 12px; padding: 8px 12px; text-align: center; border: 1px solid #FFDDD0; }
+.eta-num { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: var(--orange); }
+.eta-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+/* tracking map */
+.tracking-map {
+  height: 220px; background: #e8eaf6; margin: 0 16px; border-radius: 16px;
+  position: relative; overflow: hidden;
+}
+.track-path {
+  position: absolute; inset: 0;
+}
+.track-path svg { width: 100%; height: 100%; }
+.track-driver { position: absolute; top: 18%; left: 12%; font-size: 26px; animation: driverMove 4s ease infinite; }
+@keyframes driverMove { 0%,100%{top:18%;left:12%} 50%{top:22%;left:18%} }
+.track-dest { position: absolute; bottom: 22%; right: 18%; }
+.track-dest-ring { width: 30px; height: 30px; background: rgba(91,45,142,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: destPulse 2s ease infinite; }
+@keyframes destPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+.track-dest-dot { width: 14px; height: 14px; background: var(--purple); border-radius: 50%; border: 2px solid white; }
+.track-eta-bubble { position: absolute; top: 36%; left: 38%; background: white; border-radius: 12px; padding: 8px 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+.track-eta-num { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); }
+.track-eta-km { font-size: 11px; color: var(--muted); }
+/* driver card */
+.driver-card { background: var(--white); margin: 12px 16px; border-radius: 20px; padding: 16px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(91,45,142,0.08); }
+.driver-row { display: flex; align-items: center; gap: 12px; }
+.driver-avatar { width: 54px; height: 54px; border-radius: 16px; background: linear-gradient(135deg, var(--purple-light), var(--purple-soft)); display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+.driver-info { flex: 1; }
+.driver-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); }
+.driver-title { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.driver-plate { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.driver-rating { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--text); }
+.star-icon { color: #F59E0B; }
+.driver-actions { display: flex; gap: 10px; margin-left: auto; }
+.driver-action-btn {
+  width: 44px; height: 44px; background: var(--purple-light); border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer;
+  transition: all 0.2s;
+}
+.driver-action-btn:hover { background: var(--purple); }
+/* progress timeline */
+.timeline { background: var(--white); margin: 0 16px 12px; border-radius: 20px; padding: 16px; border: 1px solid var(--border); }
+.timeline-steps { display: flex; align-items: center; position: relative; }
+.tl-step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; z-index: 1; }
+.tl-dot {
+  width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; transition: all 0.3s;
+}
+.tl-dot.done { background: var(--purple); color: white; }
+.tl-dot.active { background: var(--orange); color: white; animation: activePulse 1.5s ease infinite; }
+.tl-dot.pending { background: var(--bg); color: var(--muted); border: 2px solid var(--border); }
+@keyframes activePulse { 0%,100%{box-shadow:0 0 0 0 rgba(240,90,40,0.4)} 50%{box-shadow:0 0 0 8px rgba(240,90,40,0)} }
+.tl-line { position: absolute; top: 16px; left: 50%; right: -50%; height: 2.5px; z-index: 0; }
+.tl-line.done { background: var(--purple); }
+.tl-line.pending { background: var(--border); }
+.tl-label { font-size: 10px; font-weight: 700; color: var(--text); margin-top: 6px; text-align: center; }
+.tl-time { font-size: 9px; color: var(--muted); margin-top: 2px; }
+/* request details */
+.details-card { background: var(--white); margin: 0 16px 12px; border-radius: 20px; padding: 16px; border: 1px solid var(--border); }
+.details-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.details-title { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+.see-details { color: var(--purple); font-size: 13px; font-weight: 700; cursor: pointer; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.detail-row:last-child { border-bottom: none; }
+.detail-left { display: flex; align-items: center; gap: 10px; }
+.detail-icon { font-size: 16px; }
+.detail-label { font-size: 14px; color: var(--muted); }
+.detail-value { font-size: 14px; font-weight: 700; color: var(--text); }
+/* price */
+.price-card { background: var(--white); margin: 0 16px 12px; border-radius: 20px; padding: 16px; border: 1px solid var(--border); }
+.price-header { display: flex; justify-content: space-between; align-items: center; }
+.price-label { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+.price-amount { font-family: 'Poppins', sans-serif; font-size: 26px; font-weight: 800; color: var(--orange); }
+.payment-method { display: flex; align-items: center; gap: 10px; margin-top: 12px; background: var(--bg); border-radius: 12px; padding: 10px 12px; }
+.payment-icon { font-size: 18px; }
+.payment-text { font-size: 13px; font-weight: 700; color: var(--text); }
+.payment-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+/* bottom action */
+.tracking-bottom { background: var(--white); padding: 12px 16px 28px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.eta-info { display: flex; align-items: center; gap: 10px; flex: 1; background: var(--purple-soft); border-radius: 14px; padding: 10px 14px; }
+.eta-info-icon { font-size: 24px; color: var(--purple); }
+.eta-info-text { }
+.eta-info-label { font-size: 11px; color: var(--muted); }
+.eta-info-val { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: var(--purple); }
+.eta-info-km { font-size: 11px; color: var(--muted); }
+.cancel-btn {
+  background: transparent; border: 1.5px solid var(--orange); color: var(--orange);
+  border-radius: 14px; padding: 12px 16px; font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.cancel-btn:hover { background: var(--orange-soft); }
+.secure-badge { text-align: center; color: var(--muted); font-size: 11px; padding: 6px 0; display: flex; align-items: center; justify-content: center; gap: 5px; }
+
+/* ── SCREEN: REVIEW ── */
+#screen-review { background: var(--bg); }
+.review-header {
+  background: var(--white); padding: 52px 20px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+/* success banner */
+.success-banner { background: var(--white); margin: 12px 16px; border-radius: 20px; padding: 20px; border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden; }
+.confetti { position: absolute; inset: 0; pointer-events: none; }
+.confetti-dot { position: absolute; border-radius: 50%; animation: confettiFall 3s ease infinite; }
+.success-check { width: 64px; height: 64px; background: var(--purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 14px; box-shadow: 0 8px 24px rgba(91,45,142,0.3); position: relative; z-index: 1; }
+.success-title { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); position: relative; z-index: 1; }
+.success-sub { font-size: 14px; color: var(--muted); margin-top: 6px; position: relative; z-index: 1; }
+@keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100px) rotate(360deg);opacity:0} }
+/* driver summary */
+.review-driver { background: var(--white); margin: 0 16px 12px; border-radius: 20px; padding: 16px; border: 1px solid var(--border); }
+/* route summary */
+.route-summary { background: var(--white); margin: 0 16px 12px; border-radius: 16px; padding: 14px 16px; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.route-point { display: flex; flex-direction: column; align-items: center; }
+.route-dot { width: 12px; height: 12px; border-radius: 50%; }
+.route-dot.start { background: var(--purple); border: 2px solid var(--purple-light); }
+.route-dot.end { background: var(--orange); border: 2px solid var(--orange-soft); }
+.route-addr { font-size: 12px; font-weight: 700; color: var(--text); }
+.route-city { font-size: 10px; color: var(--muted); }
+.route-arrow { font-size: 20px; color: var(--muted); flex: 1; text-align: center; }
+/* trip stats */
+.trip-stats { background: var(--white); margin: 0 16px 12px; border-radius: 16px; padding: 14px 16px; border: 1px solid var(--border); display: flex; justify-content: space-between; }
+.trip-stat { flex: 1; text-align: center; }
+.trip-stat:not(:last-child) { border-right: 1px solid var(--border); }
+.trip-stat-icon { font-size: 16px; margin-bottom: 4px; }
+.trip-stat-label { font-size: 11px; color: var(--muted); }
+.trip-stat-val { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); margin-top: 3px; }
+.trip-stat-val.orange { color: var(--orange); }
+/* star rating */
+.rating-card { background: var(--white); margin: 0 16px 12px; border-radius: 20px; padding: 20px 16px; border: 1px solid var(--border); }
+.rating-title { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.stars-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 10px; }
+.star-btn { font-size: 40px; cursor: pointer; transition: all 0.2s; filter: grayscale(1); opacity: 0.3; }
+.star-btn.active { filter: none; opacity: 1; transform: scale(1.1); }
+.rating-label-text { text-align: center; font-size: 15px; font-weight: 700; color: var(--orange); min-height: 22px; }
+/* comment */
+.comment-card { background: var(--white); margin: 0 16px 12px; border-radius: 20px; padding: 20px 16px; border: 1px solid var(--border); }
+.comment-title { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.comment-title span { color: var(--muted); font-size: 13px; font-weight: 500; }
+.comment-textarea {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 14px; font-family: 'Nunito', sans-serif; font-size: 14px; color: var(--text);
+  resize: none; outline: none; height: 90px; transition: border-color 0.2s;
+}
+.comment-textarea:focus { border-color: var(--purple); }
+.char-count { text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px; }
+/* photos */
+.photos-card { background: var(--white); margin: 0 16px 12px; border-radius: 20px; padding: 20px 16px; border: 1px solid var(--border); }
+.photos-title { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.photos-title span { color: var(--muted); font-size: 13px; font-weight: 500; }
+.photos-row { display: flex; gap: 8px; }
+.photo-add {
+  width: 72px; height: 72px; background: var(--bg); border: 2px dashed var(--border); border-radius: 14px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+}
+.photo-add:hover { border-color: var(--purple); }
+.photo-add-icon { font-size: 22px; margin-bottom: 2px; }
+.photo-add-label { font-size: 9px; color: var(--muted); font-weight: 700; }
+.photo-thumb { width: 72px; height: 72px; border-radius: 14px; background: #ddd; position: relative; overflow: hidden; flex-shrink: 0; }
+.photo-thumb-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.photo-thumb-remove { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; cursor: pointer; }
+/* guarantee */
+.guarantee-card { background: var(--purple-soft); margin: 0 16px 12px; border-radius: 16px; padding: 14px 16px; border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.guarantee-icon { font-size: 28px; }
+.guarantee-text { flex: 1; }
+.guarantee-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.guarantee-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.guarantee-arrow { color: var(--muted); font-size: 18px; }
+/* finish button */
+.finish-btn {
+  width: calc(100% - 32px); margin: 0 16px 28px; background: var(--purple); color: var(--white);
+  border: none; border-radius: 18px; padding: 18px; font-family: 'Nunito', sans-serif;
+  font-size: 17px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 24px rgba(91,45,142,0.3);
+  transition: all 0.2s; flex-shrink: 0;
+}
+.finish-btn:hover { transform: translateY(-2px); }
+.finish-btn:active { transform: translateY(0); }
+
+/* ── SCREEN: PROFILE ── */
+#screen-profile { }
+.profile-header {
+  background: linear-gradient(160deg, var(--purple-dark), var(--purple));
+  padding: 52px 20px 30px; text-align: center;
+}
+.profile-avatar-wrap { width: 80px; height: 80px; border-radius: 24px; background: rgba(255,255,255,0.15); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 3px solid rgba(255,255,255,0.3); }
+.profile-name { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: white; }
+.profile-phone { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 4px; }
+.profile-body { padding: 16px; }
+.profile-section-title { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin: 16px 0 10px; }
+.profile-item { background: var(--white); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
+.profile-item:hover { border-color: var(--purple); }
+.profile-item-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.profile-item-text { flex: 1; }
+.profile-item-label { font-size: 14px; font-weight: 700; color: var(--text); }
+.profile-item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.profile-item-arrow { color: var(--muted); font-size: 16px; }
+.logout-btn { width: 100%; background: #FEF2F2; color: var(--red); border: 1.5px solid #FECACA; border-radius: 16px; padding: 14px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 8px; transition: all 0.2s; }
+.logout-btn:hover { background: #FEE2E2; }
+
+/* TOAST */
+.toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--text); color: white; padding: 12px 20px; border-radius: 100px; font-size: 13px; font-weight: 700; opacity: 0; transition: all 0.3s; z-index: 9999; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="status-bar">
+      <span class="status-time" id="clock">9:41</span>
+      <div class="status-icons">
+        <span>●●●●</span><span>🛜</span><span>🔋</span>
+      </div>
+    </div>
+
+    <!-- ══ SPLASH ══ -->
+    <div class="screen active" id="screen-splash">
+      <div class="splash-content">
+        <div class="splash-logo">🔧 <span>D</span>epanini</div>
+        <div class="splash-tagline">Dépannage rapide, où que vous soyez</div>
+        <div class="splash-truck">🚛</div>
+        <button class="splash-btn" onclick="goTo('login')">Commencer →</button>
+        <div class="splash-secure">🛡️ Vos données sont sécurisées</div>
+      </div>
+    </div>
+
+    <!-- ══ LOGIN ══ -->
+    <div class="screen" id="screen-login">
+      <div class="screen-scroll">
+        <div class="login-hero">
+          <div class="login-logo">🔧 <span>D</span>epanini</div>
+          <div class="login-sub">Dépannage rapide, où que vous soyez</div>
+        </div>
+        <div class="login-sheet">
+          <div class="login-title">Bon retour !</div>
+          <div class="login-sub2">Connectez-vous à votre compte</div>
+          <div class="tabs">
+            <div class="tab active">Connexion</div>
+            <div class="tab">Inscription</div>
+          </div>
+          <div class="input-field">
+            <span class="input-icon">📞</span>
+            <span style="font-size:14px;font-weight:700;color:var(--purple);margin-right:4px;">+213 ▾</span>
+            <input type="tel" placeholder="5 55 55 55 55">
+          </div>
+          <div class="input-field">
+            <span class="input-icon">🔒</span>
+            <input type="password" placeholder="Mot de passe">
+          </div>
+          <div class="remember-row">
+            <div class="remember"><div class="check-box">✓</div> Se souvenir de moi</div>
+            <div class="forgot">Mot de passe oublié ?</div>
+          </div>
+          <button class="btn-purple" onclick="goTo('home')">Se connecter →</button>
+          <div class="divider-text">ou continuer avec</div>
+          <div class="social-btns">
+            <div class="social-btn" onclick="goTo('home')">🇬 Google</div>
+            <div class="social-btn" onclick="goTo('home')">📘 Facebook</div>
+          </div>
+          <div class="role-section">
+            <div class="role-title">Vous êtes nouveau ?</div>
+            <div class="role-sub">Choisissez votre rôle pour commencer</div>
+            <div class="role-btns">
+              <div class="role-btn client" onclick="goTo('home')">
+                <div class="role-icon">👤</div>
+                <div class="role-name">Client</div>
+                <div class="role-desc">J'ai besoin d'aide</div>
+              </div>
+              <div class="role-btn driver" onclick="goTo('home')">
+                <div class="role-icon">🔧</div>
+                <div class="role-name">Dépanneur</div>
+                <div class="role-desc">Je veux dépanner</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HOME ══ -->
+    <div class="screen" id="screen-home">
+      <div class="home-header">
+        <div class="header-menu">☰</div>
+        <div class="header-logo">🔧 <span>D</span>epanini</div>
+        <div class="header-bell">🔔<div class="bell-badge">2</div></div>
+      </div>
+      <div class="screen-scroll">
+        <div class="loc-bar">
+          <div class="loc-icon">📍</div>
+          <div class="loc-text">
+            <div class="loc-label">Ma position</div>
+            <div class="loc-addr">Rue Larbi Ben M'hidi, Oran 31000</div>
+          </div>
+          <div class="loc-target">⊕</div>
+        </div>
+        <div class="home-map">
+          <div class="map-grid-bg"></div>
+          <div class="map-road h" style="top:30%"></div>
+          <div class="map-road h" style="top:60%"></div>
+          <div class="map-road v" style="left:32%"></div>
+          <div class="map-road v" style="left:65%"></div>
+          <div class="map-user-dot"></div>
+          <div class="map-truck-anim">🚛</div>
+          <div class="map-truck-anim2">🚐</div>
+          <div class="map-recenter">⊕</div>
+        </div>
+        <div class="request-btn" onclick="goTo('tracking')">
+          <div class="request-btn-icon">🚛</div>
+          <div class="request-btn-text">
+            <div class="request-btn-title">J'ai besoin d'un dépannage</div>
+            <div class="request-btn-sub">Touchez pour demander un dépanneur</div>
+          </div>
+          <div class="request-btn-arrow">→</div>
+        </div>
+        <div class="prob-section">
+          <div class="prob-title">Quel est le problème ?</div>
+          <div class="prob-grid">
+            <div class="prob-card" onclick="goTo('tracking')">
+              <div class="prob-card-icon">⚠️</div>
+              <div class="prob-card-text">
+                <div class="prob-card-name">Accident</div>
+                <div class="prob-card-desc">Véhicule accidenté</div>
+              </div>
+            </div>
+            <div class="prob-card" onclick="goTo('tracking')">
+              <div class="prob-card-icon">🔧</div>
+              <div class="prob-card-text">
+                <div class="prob-card-name">Panne</div>
+                <div class="prob-card-desc">Véhicule en panne</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="recent-section">
+          <div class="recent-header">
+            <div class="recent-title">Mes demandes récentes</div>
+            <div class="see-all">Voir tout</div>
+          </div>
+          <div class="recent-item" onclick="goTo('tracking')">
+            <div class="recent-item-icon">🚗</div>
+            <div class="recent-item-text">
+              <div class="recent-item-title">Accident</div>
+              <div class="recent-item-date">12 Mai 2024 • 14:30</div>
+            </div>
+            <div class="badge-done">Terminée</div>
+          </div>
+          <div class="recent-item" onclick="goTo('tracking')">
+            <div class="recent-item-icon">🔧</div>
+            <div class="recent-item-text">
+              <div class="recent-item-title">Panne</div>
+              <div class="recent-item-date">8 Mai 2024 • 09:15</div>
+            </div>
+            <div class="badge-done">Terminée</div>
+          </div>
+        </div>
+        <div class="support-card">
+          <div class="support-icon">🎧</div>
+          <div class="support-text">
+            <div class="support-title">Besoin d'aide ?</div>
+            <div class="support-sub">Contactez notre support 24h/24</div>
+          </div>
+          <div class="support-btn">📞</div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item active" onclick="navTo('home', this)">
+          <div class="nav-icon">🏠</div>
+          <div class="nav-label">Accueil</div>
+        </div>
+        <div class="nav-item" onclick="navTo('home', this)">
+          <div class="nav-icon">📋</div>
+          <div class="nav-label">Demandes</div>
+        </div>
+        <div class="nav-center-btn" onclick="goTo('tracking')">🚛</div>
+        <div class="nav-item" onclick="showToast('💬 Messagerie bientôt disponible')">
+          <div class="nav-icon">💬</div>
+          <div class="nav-label">Messages</div>
+        </div>
+        <div class="nav-item" onclick="goTo('profile')">
+          <div class="nav-icon">👤</div>
+          <div class="nav-label">Profil</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TRACKING ══ -->
+    <div class="screen" id="screen-tracking">
+      <div class="tracking-header">
+        <div class="back-btn" onclick="goTo('home')">←</div>
+        <div class="tracking-title">
+          <div class="tracking-title-main">Détails de la demande</div>
+          <div class="tracking-title-sub">Demande #DPN4587</div>
+        </div>
+        <div class="help-btn" onclick="showToast('📞 Support contacté')">
+          <span>🎧</span><span>Aide</span>
+        </div>
+      </div>
+      <div class="screen-scroll">
+        <div class="status-card">
+          <div class="status-truck-icon">🚛</div>
+          <div class="status-text">
+            <div class="status-main">Dépanneur en route</div>
+            <div class="status-desc">Votre dépanneur arrive bientôt</div>
+          </div>
+          <div class="eta-badge">
+            <div class="eta-num">18</div>
+            <div class="eta-label">min</div>
+            <div class="eta-label">arrivée estimée</div>
+          </div>
+        </div>
+        <div class="tracking-map">
+          <div class="map-grid-bg"></div>
+          <div class="map-road h" style="top:38%"></div>
+          <div class="map-road h" style="top:68%"></div>
+          <div class="map-road v" style="left:30%"></div>
+          <div class="map-road v" style="left:64%"></div>
+          <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M 18 25 Q 32 30 45 38 Q 58 46 68 68" stroke="#5B2D8E" stroke-width="1.5" fill="none" stroke-dasharray="3,2" stroke-linecap="round"/>
+          </svg>
+          <div class="track-driver">🚛</div>
+          <div class="track-dest">
+            <div class="track-dest-ring"><div class="track-dest-dot"></div></div>
+          </div>
+          <div class="track-eta-bubble">
+            <div class="track-eta-num">18 min</div>
+            <div class="track-eta-km">6.1 km</div>
+          </div>
+        </div>
+        <div class="driver-card">
+          <div class="driver-row">
+            <div class="driver-avatar">👨‍🔧</div>
+            <div class="driver-info">
+              <div class="driver-name">Ahmed Dépannage <span class="driver-rating"><span class="star-icon">⭐</span> 4.8</span></div>
+              <div class="driver-title">Dépanneur professionnel</div>
+              <div class="driver-plate">Immatriculation : 123456 31</div>
+            </div>
+            <div class="driver-actions">
+              <div class="driver-action-btn" onclick="showToast('📞 Appel en cours...')">📞</div>
+              <div class="driver-action-btn" onclick="showToast('💬 Messagerie ouverte')">💬</div>
+            </div>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-steps">
+            <div class="tl-step">
+              <div class="tl-dot done">✓</div>
+              <div class="tl-label">Demande<br>acceptée</div>
+              <div class="tl-time">10:20</div>
+              <div class="tl-line done"></div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-dot active">🚛</div>
+              <div class="tl-label">En route<br>vers vous</div>
+              <div class="tl-time">10:22</div>
+              <div class="tl-line pending"></div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-dot pending">📍</div>
+              <div class="tl-label">Arrivé sur<br>place</div>
+              <div class="tl-time">—</div>
+              <div class="tl-line pending"></div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-dot pending">🔧</div>
+              <div class="tl-label">Dépannage<br>en cours</div>
+              <div class="tl-time">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="details-card">
+          <div class="details-header">
+            <div class="details-title">Détails de la demande</div>
+            <div class="see-details">Voir détails</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-left"><span class="detail-icon">🔧</span><span class="detail-label">Type de problème</span></div>
+            <div class="detail-value">Panne</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-left"><span class="detail-icon">📍</span><span class="detail-label">Lieu de départ</span></div>
+            <div class="detail-value" style="font-size:12px;">Rue Larbi Ben M'hidi</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-left"><span class="detail-icon">🏁</span><span class="detail-label">Destination</span></div>
+            <div class="detail-value" style="font-size:12px;">Garage Benyahia</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-left"><span class="detail-icon">📏</span><span class="detail-label">Distance</span></div>
+            <div class="detail-value">6.1 km</div>
+          </div>
+        </div>
+        <div class="price-card">
+          <div class="price-header">
+            <div class="price-label">Prix convenu</div>
+            <div class="price-amount">7000 DA</div>
+          </div>
+          <div class="payment-method">
+            <div class="payment-icon">💵</div>
+            <div>
+              <div class="payment-text">Paiement en espèces</div>
+              <div class="payment-sub">À régler au dépanneur</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="flex-shrink:0;">
+        <div class="tracking-bottom">
+          <div class="eta-info">
+            <div class="eta-info-icon">⏱️</div>
+            <div class="eta-info-text">
+              <div class="eta-info-label">Arrivée estimée</div>
+              <div class="eta-info-val">18 min</div>
+              <div class="eta-info-km">6.1 km</div>
+            </div>
+          </div>
+          <button class="cancel-btn" onclick="showToast('❌ Annulation envoyée')">Annuler la demande</button>
+        </div>
+        <div class="secure-badge">🛡️ Vos données sont sécurisées</div>
+        <button style="width:calc(100% - 32px);margin:0 16px 12px;background:var(--green);color:white;border:none;border-radius:16px;padding:14px;font-family:Nunito,sans-serif;font-size:15px;font-weight:800;cursor:pointer;" onclick="goTo('review')">✓ Simuler fin de course →</button>
+      </div>
+    </div>
+
+    <!-- ══ REVIEW ══ -->
+    <div class="screen" id="screen-review">
+      <div class="review-header">
+        <div class="back-btn" onclick="goTo('home')">←</div>
+        <div class="tracking-title">
+          <div class="tracking-title-main">Service terminé</div>
+          <div class="tracking-title-sub">Merci d'avoir utilisé Depanini</div>
+        </div>
+        <div class="help-btn" onclick="showToast('🎧 Support contacté')">
+          <span>🎧</span><span>Aide</span>
+        </div>
+      </div>
+      <div class="screen-scroll">
+        <div class="success-banner">
+          <div class="confetti" id="confetti"></div>
+          <div class="success-check">✓</div>
+          <div class="success-title">Votre dépannage est terminé !</div>
+          <div class="success-sub">Nous espérons que vous êtes satisfait du service.</div>
+        </div>
+        <div class="review-driver">
+          <div class="driver-row">
+            <div class="driver-avatar">👨‍🔧</div>
+            <div class="driver-info">
+              <div class="driver-name">Ahmed Dépannage</div>
+              <div class="driver-title">Dépanneur professionnel</div>
+              <div class="driver-plate">Immatriculation : 123456 31</div>
+            </div>
+            <div class="driver-actions">
+              <div class="driver-action-btn" onclick="showToast('📞 Appel Ahmed...')">📞</div>
+            </div>
+          </div>
+        </div>
+        <div class="route-summary">
+          <div class="route-point">
+            <div class="route-dot start"></div>
+            <div style="margin-top:4px;">
+              <div class="route-addr">Rue Larbi Ben M'hidi</div>
+              <div class="route-city">Oran</div>
+            </div>
+          </div>
+          <div class="route-arrow">→</div>
+          <div class="route-point" style="align-items:flex-end;">
+            <div class="route-dot end"></div>
+            <div style="margin-top:4px;text-align:right;">
+              <div class="route-addr">Garage Benyahia</div>
+              <div class="route-city">Oran</div>
+            </div>
+          </div>
+        </div>
+        <div class="trip-stats">
+          <div class="trip-stat">
+            <div class="trip-stat-icon">⏱️</div>
+            <div class="trip-stat-label">Durée totale</div>
+            <div class="trip-stat-val">28 min</div>
+          </div>
+          <div class="trip-stat">
+            <div class="trip-stat-icon">📏</div>
+            <div class="trip-stat-label">Distance</div>
+            <div class="trip-stat-val">6.1 km</div>
+          </div>
+          <div class="trip-stat">
+            <div class="trip-stat-icon">💵</div>
+            <div class="trip-stat-label">Prix convenu</div>
+            <div class="trip-stat-val orange">7000 DA</div>
+          </div>
+        </div>
+        <div class="rating-card">
+          <div class="rating-title">Comment évaluez-vous le service ?</div>
+          <div class="stars-row" id="stars">
+            <div class="star-btn" onclick="setRating(1)">⭐</div>
+            <div class="star-btn" onclick="setRating(2)">⭐</div>
+            <div class="star-btn" onclick="setRating(3)">⭐</div>
+            <div class="star-btn active" onclick="setRating(4)">⭐</div>
+            <div class="star-btn" onclick="setRating(5)">⭐</div>
+          </div>
+          <div class="rating-label-text" id="rating-label">Très bien</div>
+        </div>
+        <div class="comment-card">
+          <div class="comment-title">Donnez votre avis <span>(optionnel)</span></div>
+          <textarea class="comment-textarea" placeholder="Partagez votre expérience..." oninput="updateCharCount(this)"></textarea>
+          <div class="char-count" id="char-count">0/250</div>
+        </div>
+        <div class="photos-card">
+          <div class="photos-title">Ajouter des photos <span>(optionnel)</span></div>
+          <div class="photos-row">
+            <div class="photo-add" onclick="showToast('📷 Galerie ouverte')">
+              <div class="photo-add-icon">📷</div>
+              <div class="photo-add-label">Ajouter</div>
+            </div>
+            <div class="photo-thumb"><div class="photo-thumb-emoji">🚗</div><div class="photo-thumb-remove">✕</div></div>
+            <div class="photo-thumb"><div class="photo-thumb-emoji">🚛</div><div class="photo-thumb-remove">✕</div></div>
+            <div class="photo-thumb"><div class="photo-thumb-emoji">🔧</div><div class="photo-thumb-remove">✕</div></div>
+          </div>
+        </div>
+        <div class="guarantee-card">
+          <div class="guarantee-icon">🛡️</div>
+          <div class="guarantee-text">
+            <div class="guarantee-title">Garantie Depanini</div>
+            <div class="guarantee-sub">En cas de problème après le dépannage, contactez notre support 24/7.</div>
+          </div>
+          <div class="guarantee-arrow">›</div>
+        </div>
+        <div style="height:8px;"></div>
+      </div>
+      <button class="finish-btn" onclick="finishReview()">Terminer</button>
+    </div>
+
+    <!-- ══ PROFILE ══ -->
+    <div class="screen" id="screen-profile">
+      <div class="screen-scroll">
+        <div class="profile-header">
+          <div class="profile-avatar-wrap">👤</div>
+          <div class="profile-name">Mohamed Amine</div>
+          <div class="profile-phone">+213 5 55 55 55 55</div>
+        </div>
+        <div class="profile-body">
+          <div class="profile-section-title">Mon compte</div>
+          <div class="profile-item" onclick="showToast('✏️ Modification du profil')">
+            <div class="profile-item-icon" style="background:var(--purple-light);">👤</div>
+            <div class="profile-item-text">
+              <div class="profile-item-label">Informations personnelles</div>
+              <div class="profile-item-sub">Nom, téléphone, email</div>
+            </div>
+            <div class="profile-item-arrow">›</div>
+          </div>
+          <div class="profile-item" onclick="showToast('🚗 Mes véhicules')">
+            <div class="profile-item-icon" style="background:var(--orange-soft);">🚗</div>
+            <div class="profile-item-text">
+              <div class="profile-item-label">Mes véhicules</div>
+              <div class="profile-item-sub">Gérer vos véhicules enregistrés</div>
+            </div>
+            <div class="profile-item-arrow">›</div>
+          </div>
+          <div class="profile-section-title">Historique</div>
+          <div class="profile-item" onclick="showToast('📋 Vos demandes')">
+            <div class="profile-item-icon" style="background:#F0FDF4;">📋</div>
+            <div class="profile-item-text">
+              <div class="profile-item-label">Mes demandes</div>
+              <div class="profile-item-sub">2 demandes terminées</div>
+            </div>
+            <div class="profile-item-arrow">›</div>
+          </div>
+          <div class="profile-item" onclick="showToast('⭐ Vos avis')">
+            <div class="profile-item-icon" style="background:#FFF7ED;">⭐</div>
+            <div class="profile-item-text">
+              <div class="profile-item-label">Mes évaluations</div>
+              <div class="profile-item-sub">Voir vos avis donnés</div>
+            </div>
+            <div class="profile-item-arrow">›</div>
+          </div>
+          <div class="profile-section-title">Paramètres</div>
+          <div class="profile-item" onclick="showToast('🔔 Notifications')">
+            <div class="profile-item-icon" style="background:var(--purple-light);">🔔</div>
+            <div class="profile-item-text">
+              <div class="profile-item-label">Notifications</div>
+              <div class="profile-item-sub">Gérer vos alertes</div>
+            </div>
+            <div class="profile-item-arrow">›</div>
+          </div>
+          <div class="profile-item" onclick="showToast('🌐 Langue : Français')">
+            <div class="profile-item-icon" style="background:#F0FDF4;">🌐</div>
+            <div class="profile-item-text">
+              <div class="profile-item-label">Langue</div>
+              <div class="profile-item-sub">Français</div>
+            </div>
+            <div class="profile-item-arrow">›</div>
+          </div>
+          <div class="profile-item" onclick="showToast('🛡️ Données sécurisées')">
+            <div class="profile-item-icon" style="background:var(--orange-soft);">🛡️</div>
+            <div class="profile-item-text">
+              <div class="profile-item-label">Confidentialité</div>
+              <div class="profile-item-sub">Politique de confidentialité</div>
+            </div>
+            <div class="profile-item-arrow">›</div>
+          </div>
+          <button class="logout-btn" onclick="goTo('splash')">🚪 Se déconnecter</button>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="goTo('home')">
+          <div class="nav-icon">🏠</div>
+          <div class="nav-label">Accueil</div>
+        </div>
+        <div class="nav-item" onclick="showToast('📋 Demandes')">
+          <div class="nav-icon">📋</div>
+          <div class="nav-label">Demandes</div>
+        </div>
+        <div class="nav-center-btn" onclick="goTo('tracking')">🚛</div>
+        <div class="nav-item" onclick="showToast('💬 Messagerie')">
+          <div class="nav-icon">💬</div>
+          <div class="nav-label">Messages</div>
+        </div>
+        <div class="nav-item active">
+          <div class="nav-icon">👤</div>
+          <div class="nav-label">Profil</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<script>
+// Clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+updateClock(); setInterval(updateClock, 10000);
+
+// Screen navigation
+let currentScreen = 'splash';
+function goTo(id) {
+  const prev = document.getElementById('screen-' + currentScreen);
+  const next = document.getElementById('screen-' + id);
+  if (!next || id === currentScreen) return;
+  prev.style.display = 'flex';
+  prev.classList.add('slide-out');
+  setTimeout(() => {
+    prev.classList.remove('active', 'slide-out');
+    prev.style.display = '';
+  }, 300);
+  next.style.display = 'flex';
+  next.classList.add('active');
+  currentScreen = id;
+  if (id === 'review') spawnConfetti();
+}
+
+// Toast
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// Star rating
+const labels = ['', 'Mauvais 😞', 'Passable 😐', 'Bien 🙂', 'Très bien 😊', 'Excellent ! 🤩'];
+let currentRating = 4;
+function setRating(n) {
+  currentRating = n;
+  const stars = document.querySelectorAll('.star-btn');
+  stars.forEach((s, i) => s.classList.toggle('active', i < n));
+  document.getElementById('rating-label').textContent = labels[n];
+}
+
+// Char count
+function updateCharCount(el) {
+  const n = Math.min(el.value.length, 250);
+  el.value = el.value.slice(0, 250);
+  document.getElementById('char-count').textContent = n + '/250';
+}
+
+// Confetti
+function spawnConfetti() {
+  const c = document.getElementById('confetti');
+  c.innerHTML = '';
+  const colors = ['#F05A28','#5B2D8E','#FFBE00','#22C55E','#FF7043'];
+  for (let i = 0; i < 20; i++) {
+    const d = document.createElement('div');
+    d.className = 'confetti-dot';
+    const size = 4 + Math.random() * 8;
+    d.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      top:${-10 + Math.random()*20}px;
+      animation-duration:${2 + Math.random()*2}s;
+      animation-delay:${Math.random()}s;
+      opacity:0.85;
+    `;
+    c.appendChild(d);
+  }
+}
+
+// Finish review
+function finishReview() {
+  showToast('✅ Avis soumis ! Merci Mohamed');
+  setTimeout(() => goTo('home'), 1200);
+}
+
+// Nav highlighting helper
+function navTo(screen, el) {
+  // no-op for demo
+}
+
+// Init splash auto-advance hint
+setTimeout(() => {
+  if (currentScreen === 'splash') {
+    const btn = document.querySelector('.splash-btn');
+    if (btn) btn.style.animation = 'activePulse 1s ease 3';
+  }
+}, 2000);
+</script>
+</body>
+</html>
